@@ -1,0 +1,41 @@
+#!/bin/bash
+
+trimmomatic PE 191128-TN001-81_S61_L001_R1_001.fastq 191128-TN001-81_S61_L001_R2_001.fastq WB_F1_R1_paired.fastq.gz WB_F1_R1_unpaired.fastq.gz WB_F1_R2_paired.fastq.gz WB_F1_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-20_S85_L001_R1_001.fastq 191128-TN001-20_S85_L001_R2_001.fastq WB_F2_R1_paired.fastq.gz WB_F2_R1_unpaired.fastq.gz WB_F2_R2_paired.fastq.gz WB_F2_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-45_S58_L001_R1_001.fastq 191128-TN001-45_S58_L001_R2_001.fastq BactVivi_F1_R1_paired.fastq.gz BactVivi_F1_R1_unpaired.fastq.gz BactVivi_F1_R2_paired.fastq.gz BactVivi_F1_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-74_S82_L001_R1_001.fastq 191128-TN001-74_S82_L001_R2_001.fastq BactVivi_F2_R1_paired.fastq.gz BactVivi_F2_R1_unpaired.fastq.gz BactVivi_F2_R2_paired.fastq.gz BactVivi_F2_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-38_S59_L001_R1_001.fastq 191128-TN001-38_S59_L001_R2_001.fastq BactMale_F1_R1_paired.fastq.gz BactMale_F1_R1_unpaired.fastq.gz BactMale_F1_R2_paired.fastq.gz BactMale_F1_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-83_S60_L001_R1_001.fastq 191128-TN001-83_S60_L001_R2_001.fastq BactOvi_F1_R1_paired.fastq.gz BactOvi_F1_R1_unpaired.fastq.gz BactOvi_F1_R2_paired.fastq.gz BactOvi_F1_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-64_S83_L001_R1_001.fastq 191128-TN001-64_S83_L001_R2_001.fastq BactMale_F2_R1_paired.fastq.gz BactMale_F2_R1_unpaired.fastq.gz BactMale_F2_R2_paired.fastq.gz BactMale_F2_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 191128-TN001-62_S84_L001_R1_001.fastq 191128-TN001-62_S84_L001_R2_001.fastq BactOvi_F2_R1_paired.fastq.gz BactOvi_F2_R1_unpaired.fastq.gz BactOvi_F2_R2_paired.fastq.gz BactOvi_F2_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV37_S37_Lall_R1_N701-S517.fastq.gz 200915-MV37_S37_Lall_R2_N701-S517.fastq.gz BactMale_F3_R1_paired.fastq.gz BactMale_F3_R1_unpaired.fastq.gz BactMale_F3_R2_paired.fastq.gz BactMale_F3_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV13_S13_Lall_R1_N701-S515.fastq.gz 200915-MV13_S13_Lall_R2_N701-S515.fastq.gz WB_F3_R1_paired.fastq.gz WB_F3_R1_unpaired.fastq.gz WB_F3_R2_paired.fastq.gz WB_F3_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV38_S38_Lall_R1_N702-S517.fastq.gz 200915-MV38_S38_Lall_R2_N702-S517.fastq.gz BactMale_F4_R1_paired.fastq.gz BactMale_F4_R1_unpaired.fastq.gz BactMale_F4_R2_paired.fastq.gz BactMale_F4_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV14_S14_Lall_R1_N702-S515.fastq.gz 200915-MV14_S14_Lall_R2_N702-S515.fastq.gz BactVivi_F3_R1_paired.fastq.gz BactVivi_F3_R1_unpaired.fastq.gz BactVivi_F3_R2_paired.fastq.gz BactVivi_F3_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV15_S15_Lall_R1_N703-S515.fastq.gz 200915-MV15_S15_Lall_R2_N703-S515.fastq.gz WBMale_F1_R1_paired.fastq.gz WBMale_F1_R1_unpaired.fastq.gz WBMale_F1_R2_paired.fastq.gz WBMale_F1_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18; 
+
+trimmomatic PE 200915-MV39_S39_Lall_R1_N703-S517.fastq.gz 200915-MV39_S39_Lall_R2_N703-S517.fastq.gz WBMale_F2_R1_paired.fastq.gz WBMale_F2_R1_unpaired.fastq.gz WBMale_F2_R2_paired.fastq.gz WBMale_F2_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV16_S16_Lall_R1_N704-S515.fastq.gz 200915-MV16_S16_Lall_R2_N704-S515.fastq.gz BactMale_F5_R1_paired.fastq.gz BactMale_F5_R1_unpaired.fastq.gz BactMale_F5_R2_paired.fastq.gz BactMale_F5_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV40_S40_Lall_R1_N704-S517.fastq.gz 200915-MV40_S40_Lall_R2_N704-S517.fastq.gz WBMale_F3_R1_paired.fastq.gz WBMale_F3_R1_unpaired.fastq.gz WBMale_F3_R2_paired.fastq.gz WBMale_F3_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV41_S41_Lall_R1_N705-S517.fastq.gz 200915-MV41_S41_Lall_R2_N705-S517.fastq.gz BactVivi_F4_R1_paired.fastq.gz BactVivi_F4_R1_unpaired.fastq.gz BactVivi_F4_R2_paired.fastq.gz BactVivi_F4_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV42_S42_Lall_R1_N706-S517.fastq.gz 200915-MV42_S42_Lall_R2_N706-S517.fastq.gz BactVivi_F5_R1_paired.fastq.gz BactVivi_F5_R1_unpaired.fastq.gz BactVivi_F5_R2_paired.fastq.gz BactVivi_F5_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV43_S43_Lall_R1_N707-S517.fastq.gz 200915-MV43_S43_Lall_R2_N707-S517.fastq.gz WB_F4_R1_paired.fastq.gz WB_F4_R1_unpaired.fastq.gz WB_F4_R2_paired.fastq.gz WB_F4_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
+
+trimmomatic PE 200915-MV44_S44_Lall_R1_N710-S517.fastq.gz 200915-MV44_S44_Lall_R2_N710-S517.fastq.gz WB_F5_R1_paired.fastq.gz WB_F5_R1_unpaired.fastq.gz WB_F5_R2_paired.fastq.gz WB_F5_R2_unpaired.fastq.gz SLIDINGWINDOW:4:30 ILLUMINACLIP:nextera.fa:2:30:5 LEADING:3 TRAILING:3 MINLEN:18;
