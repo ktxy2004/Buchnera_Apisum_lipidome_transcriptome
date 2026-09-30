@@ -110,84 +110,112 @@ write.csv(combined_df, file = "~/Desktop/20230522_BuchneraLipidomics/20240213_LC
 ##########################################
 # Heatmap + clustering by lipid class and molecule
 ##########################################
-
 library(dplyr)
 library(pheatmap)
-library(lipidr)
 
-# 1 Annotate lipids with class
-annot <- lipidr::annotate_lipids(combined_df$Molecule)
+# 1. Assign classes, preserving every input feature
+sample_cols <- setdiff(names(combined_df), "Molecule")
 
-# Merge annotation
 combined_df2 <- combined_df %>%
-  left_join(annot[, c("clean_name", "class_stub")],
-            by = c("Molecule" = "clean_name"))
+  mutate(
+    feature_id = row_number(),
+    class_stub = sub("[[:space:]].*$", "", trimws(Molecule)),
+    class_stub = case_when(
+      grepl("^CoQ[0-9]*$", class_stub) ~ "CoQ",
+      class_stub %in% c("PE-O", "PE-P") ~ "PE",
+      TRUE ~ class_stub
+    )
+  )
 
-# 2 Manually correct class assignments
-combined_df2 <- combined_df2 %>%
-  mutate(class_stub = case_when(
-    grepl("^Cer", Molecule)      ~ "Cer",
-    grepl("^SM", Molecule)       ~ "SM",
-    grepl("^HexCer", Molecule)   ~ "HexCer",
-    grepl("^PE O-", Molecule)    ~ "PE-O",
-    grepl("^SL", Molecule)       ~ "SL",
-    grepl("^ST", Molecule)       ~ "ST",
-    grepl("^CoQ", Molecule)      ~ "CoQ",
-    TRUE ~ class_stub
-  )) %>%
-  mutate(class_stub = ifelse(class_stub == "PE-O", "PE", class_stub))
+# 2. Check class assignments
+expected_classes <- c(
+  "TG", "DG", "MG", "FA", "FAHFA", "CAR",
+  "PC", "PE", "PI", "PS", "PG",
+  "LPC", "LPE", "LPI", "LPS", "LPG",
+  "CL", "DLCL", "HBMP",
+  "Cer", "HexCer", "SM", "SPB", "SL",
+  "ST", "CE", "CoQ"
+)
 
-# 3️ Compute class-level averages and lipid counts
-class_df <- combined_df2 %>%
-  group_by(class_stub) %>%
-  summarise(across(-Molecule, mean, na.rm = TRUE),
-            n_lipids = n_distinct(Molecule), .groups = "drop")
+unassigned <- combined_df2 %>%
+  filter(is.na(class_stub) | !class_stub %in% expected_classes) %>%
+  dplyr::select(feature_id, Molecule, class_stub)
 
-# 4️ Convert to matrix, remove or impute NAs
-row_labels <- paste0(class_df$class_stub, " (", class_df$n_lipids, ")")
-class_mat <- as.matrix(class_df[, -c(1, ncol(class_df))])
-rownames(class_mat) <- row_labels
+print(unassigned)
 
-# Replace NA entries with row means (imputation for visualization)
-for (i in seq_len(nrow(class_mat))) {
-  nas <- is.na(class_mat[i, ])
-  if (any(nas)) {
-    class_mat[i, nas] <- mean(class_mat[i, !nas], na.rm = TRUE)
-  }
+if (nrow(unassigned) > 0) {
+  stop("Review the unrecognized lipid names before class aggregation.")
 }
 
-# Remove rows that are entirely NA (safety)
-class_mat <- class_mat[rowSums(is.na(class_mat)) < ncol(class_mat), ]
+# 3. Exclude CoQ and calculate class means and feature counts
+combined_df2 <- combined_df2 %>%
+  filter(class_stub != "CoQ")
 
-# 5️ Define color palette (colorblind-friendly)
+class_df <- combined_df2 %>%
+  group_by(class_stub) %>%
+  summarise(
+    across(all_of(sample_cols), ~ mean(.x, na.rm = TRUE)),
+    n_lipids = n(),
+    .groups = "drop"
+  )
+
+stopifnot(sum(class_df$n_lipids) == nrow(combined_df2))
+
+print(class_df[, c("class_stub", "n_lipids")])
+
+# 4. Convert sample columns to a matrix
+class_mat <- as.matrix(
+  class_df %>% dplyr::select(all_of(sample_cols))
+)
+
+rownames(class_mat) <- paste0(
+  class_df$class_stub, " (", class_df$n_lipids, ")"
+)
+
+# Check values before clustering
+if (any(!is.finite(class_mat))) {
+  stop("Class means contain missing or non-finite values; review before plotting.")
+}
+
+if (any(apply(class_mat, 1, sd) == 0)) {
+  stop("A lipid class has zero variance and cannot be row-scaled.")
+}
+
+# 5. Define sample colors
 ann_colors <- list(
   SampleType = c(
-    Apisum_WholeBody     = "#0072B2",   # blue
-    Apisum_Appendages    = "#E69F00",   # orange
-    Buchnera             = "#009E73",   # bluish green
-    Apisum_Bacteriocytes = "#CC79A7"    # purple
+    Apisum_WholeBody     = "#0072B2",
+    Apisum_Appendages    = "#E69F00",
+    Buchnera            = "#009E73",
+    Apisum_Bacteriocytes = "#CC79A7"
   )
 )
 
-# 6️⃣ Sample annotation
-sample_annot <- data.frame(SampleType = d_normalized$SampleType)
-rownames(sample_annot) <- colnames(combined_df[, -1])
+# 6. Match sample annotation to matrix columns
+sample_annot <- data.frame(
+  SampleType = d_normalized$SampleType,
+  row.names = colnames(d_normalized)
+)
 
-# 7️⃣ Plot class-level heatmap
-pheatmap(class_mat,
-         scale = "row",
-         annotation_col = sample_annot,
-         annotation_colors = ann_colors,
-         clustering_distance_rows = "euclidean",
-         clustering_distance_cols = "euclidean",
-         clustering_method = "ward.D2",
-         show_rownames = TRUE,
-         show_colnames = TRUE,
-         na_col = "grey90")  # soft neutral color just in case any NA remains
+stopifnot(all(colnames(class_mat) %in% rownames(sample_annot)))
 
+sample_annot <- sample_annot[colnames(class_mat), , drop = FALSE]
 
+# 7. Plot class-level heatmap
+pheatmap(
+  class_mat,
+  scale = "row",
+  annotation_col = sample_annot,
+  annotation_colors = ann_colors,
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean",
+  clustering_method = "ward.D2",
+  show_rownames = TRUE,
+  show_colnames = TRUE,
+  na_col = "grey90"
+)
 ##########################################
-# Molecule-level heatmap (optional)
+# Molecule-level heatmap (supplementary)
 ##########################################
 
 mol_mat <- as.matrix(combined_df[, -1])
@@ -917,7 +945,9 @@ p_final <- ggraph(layout_df) +
   ) 
 
 # --- 14. Print final plot -----------------------------------------------------
-p_final
+# Close graphics devices, then display the plot
+graphics.off()
+print(p_final)
 
 
 
@@ -939,7 +969,7 @@ modules <- sort(unique(V(graph)$Module))
 for (m in modules) {
   mod_df <- module_table[module_table$Module == m, ]
   
-  if (nrow(mod_df) == 0) next   # 🔥 skip empty modules
+  if (nrow(mod_df) == 0) next   #skip empty modules
   
   write.table(mod_df,
               file = file.path("~/Desktop/modules_lipid_lists", paste0("module_", m, ".txt")),
@@ -1110,4 +1140,90 @@ plot_enrichment(de_results, significant.sets, annotation = "class")
 plot_chain_distribution(de_results)
 
 
+######count checking ### untargeted 
+library(VennDiagram)
+library(grid)
 
+# 1. Feature-level values used for the heatmap; CoQ already excluded
+venn_mat <- as.matrix(
+  combined_df2 %>% dplyr::select(all_of(sample_cols))
+)
+
+# Match metadata to sample columns
+venn_annot <- sample_annot[colnames(venn_mat), , drop = FALSE]
+
+group_map <- c(
+  Apisum_WholeBody     = "Wb",
+  Apisum_Appendages    = "App",
+  Buchnera            = "B",
+  Apisum_Bacteriocytes = "BC"
+)
+
+sample_groups <- unname(
+  group_map[as.character(venn_annot$SampleType)]
+)
+
+print(table(sample_groups, useNA = "ifany"))
+
+# 2. Calculate group means for each individual feature
+groups <- c("Wb", "App", "B", "BC")
+
+group_means <- sapply(groups, function(g) {
+  idx <- which(sample_groups == g)
+  
+  if (length(idx) == 0) {
+    stop(paste("No samples found for:", g))
+  }
+  
+  rowMeans(venn_mat[, idx, drop = FALSE], na.rm = TRUE)
+})
+
+# 3. Apply the original group mean > 0 rule
+above_zero <- is.finite(group_means) & group_means > 0
+
+# Preserve duplicate names as separate features, as in the heatmap
+feature_ids <- as.character(combined_df2$feature_id)
+
+metabolite_list <- setNames(
+  lapply(seq_along(groups), function(j) {
+    feature_ids[above_zero[, j]]
+  }),
+  groups
+)
+
+print(lengths(metabolite_list))
+
+shared_ids <- Reduce(intersect, metabolite_list)
+
+cat("Features included:", nrow(venn_mat), "\n")
+cat("Features shared across all four groups:",
+    length(shared_ids), "\n")
+
+# Inspect group means alongside original names
+venn_table <- data.frame(
+  feature_id = feature_ids,
+  Molecule = combined_df2$Molecule,
+  group_means,
+  shared_all = feature_ids %in% shared_ids,
+  check.names = FALSE
+)
+
+# 4. Draw the Venn diagram
+venn.plot <- venn.diagram(
+  x = metabolite_list,
+  category.names = names(metabolite_list),
+  filename = NULL,
+  col = "transparent",
+  fill = c("#0072B2", "#E69F00", "#009E73", "#CC79A7"),
+  alpha = 0.50,
+  cex = 1.5,
+  fontfamily = "sans",
+  cat.cex = 1.3,
+  cat.fontfamily = "sans",
+  cat.col = "black",
+  cat.dist = rep(0.05, 4),
+  margin = 0.10
+)
+
+grid.newpage()
+grid.draw(venn.plot)
