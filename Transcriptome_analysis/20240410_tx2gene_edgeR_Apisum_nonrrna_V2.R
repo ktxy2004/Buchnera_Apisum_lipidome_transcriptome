@@ -686,7 +686,7 @@ overlap_genes <- intersect(
   GO_DEGs_full$gene_id[GO_DEGs_full$GOALL == "GO:0006644"]
 )
 
-cat("\n✅ Exported Table_S3_GO_lipid_DEGs.csv\n\n")
+cat("\n Exported Table_S3_GO_lipid_DEGs.csv\n\n")
 cat("Summary by GO term:\n")
 print(summary_counts)
 cat("\nGenes present in BOTH GO terms:", length(overlap_genes), "\n")
@@ -705,14 +705,14 @@ cat(paste(overlap_genes, collapse = ", "), "\n")
 library(dplyr)
 library(readr)
 
-# --- 1️⃣ Load mapping table --
+# --- Load mapping table --
 mapping <- read_csv("~/Desktop/RNAseq_analysis_Apisum_nonrrna/20251025_figures/Alt_ACYPI_to_LOC_Mapping.csv")
 
-# --- 2️⃣ Load Acetyl_Apisum IDs ---
+# --- Load Acetyl_Apisum IDs ---
 acetyl_ids <- readLines("~/Desktop/RNAseq_analysis_Apisum_nonrrna/20251025_figures/Acetyl_Apisum.txt")
 acetyl_ids <- gsub(">7029\\.|-PA", "", acetyl_ids)  # clean to get pure ACYPI IDs
 
-# --- 3️⃣ Map to LOC IDs ---
+# ---  Map to LOC IDs ---
 acetyl_loc <- mapping %>%
   filter(ACYPI_ID %in% acetyl_ids) %>%
   distinct(LOC_ID) %>%
@@ -786,7 +786,7 @@ write.csv(
   row.names = FALSE
 )
 
-cat("✅ Exported", nrow(acetyl_expr_export), "Acetyl-CoA transporter genes\n")
+cat(" Exported", nrow(acetyl_expr_export), "Acetyl-CoA transporter genes\n")
 
 
 #################ClusterProfiler############
